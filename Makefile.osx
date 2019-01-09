@@ -1,0 +1,82 @@
+/*   
+    Copyright 2006, Astrophysics Research Institute, Liverpool John Moores University.
+
+    This file is part of autolog.
+
+    autolog is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    autolog is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with autolog; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+HOMEDEV = /Users/dev/
+DEVINC_DIR = ${HOMEDEV}src/include/
+DEVLIB_DIR = ${HOMEDEV}bin/lib/$(HOSTTYPE)/
+
+FINKLIB_DIR = /sw/lib
+FINKINC_DIR = /sw/include
+
+BINDIR = $(HOMEDEV)bin/$(HOSTTYPE)/
+
+CC = gcc
+
+#Optimisation flags
+# Heavy
+OPTFLAGS = -O3 
+
+#Compile as shared library (Gets set in lt_environment anyway)
+CCSHAREDFLAG = -shared
+CCSTATICFLAG = -static
+
+#Name of platform dependent time library (Gets set in lt_environment anyway)
+TIMELIB = -lrt
+
+#CJM-esque obsessive compiler check flags
+CCHECKFLAG = -ansi -pedantic -Wall
+
+
+#
+# Libraries and objects
+#
+
+${DEVLIB_DIR}lt_filenames.o : lt_filenames.c lt_filenames.h
+	${CC} -c -o ${DEVLIB_DIR}lt_filenames.o lt_filenames.c  ${CCHECKFLAG} ${OPTFLAG}
+
+
+#
+# Executables
+#
+
+autolog : autolog.c ${DEVLIB_DIR}lt_filenames.o
+	cc -o ${BINDIR}autolog autolog.c ${DEVLIB_DIR}lt_filenames.o -I${DEVINC_DIR} -I${FINKINC_DIR}  -L${DEVLIB_DIR} -L${FINKLIB_DIR} -lcfitsio -lm 
+
+red_report : red_report.o lt_filenames.o 
+	cc -o ${BINDIR}red_report red_report.c lt_filenames.o -I${DEVINC_DIR} -L${LT_LIB_DIR} -lcfitsio -lm ${PLATFORM_LIBS} 
+
+
+
+#
+# Admin
+#
+
+clean :
+	rm *.o
+
+
+
+
+
+
+
+
+
+#
